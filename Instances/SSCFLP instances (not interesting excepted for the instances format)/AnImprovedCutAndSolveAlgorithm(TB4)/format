@@ -1,0 +1,25 @@
+n = number of facility sites
+m = number of customers
+s_i = capacity of facility located at site i
+f_i = fixed cost of opening a facility at site i
+d_j = demand at customer j
+c_ij = allocation cost of assigning customer j to facility site i
+
+For each instance, the input file takes the following form
+
+n
+m
+s_1 f_1
+s_2 f_2
+s_3 f_3
+...
+...
+s_n f_n
+d_1 d_2 d_3 ... d_m
+
+c_11 c_12 c_13 ... c_1m
+c_21 c_22 c_23 ... c_2m
+...
+...
+c_n1 c_n2 c_n3 ... c_nm 
+

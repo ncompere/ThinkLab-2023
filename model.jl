@@ -1,8 +1,8 @@
-using JuMP, Gurobi, HiGHS
-
-import MathOptInterface as MOI
+using JuMP
+import HiGHS
 import MultiObjectiveAlgorithms as MOA
 
 # Define the model
-model = Model(HiGHS.Optimizer)
-MOI.set_attribute(model, MOA.Algorithm(), MOA.EpsilonConstraint())
+model = JuMP.Model(() -> MOA.Optimizer(HiGHS.Optimizer))
+set_attribute(model, MOA.Algorithm(), MOA.EpsilonConstraint())
+

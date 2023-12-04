@@ -1,0 +1,10 @@
+m (number of customers) 
+n (number of facility sites)
+
+m x n matrix of assignment costs C=[c_ij]
+
+Vector of demands of size m
+ 
+Vector of fixed opening costs of size n
+
+Vector of facility capacities of size n
