@@ -18,8 +18,17 @@ function vOptRes(filename::String)
     c = distancesTerminalsConcentrators(terminals, lv1Concentrators)
     b = distancesConcentrators(lv1Concentrators, lv2Concentrators)
 
+    print(typeof(b))
+
+    b_int = zeros(Int64, nLevel1, nLevel2)
+    for i in b
+        
+
+    print("b_int : ", b_int)
+
     # cost of opening concentrators at level 2
-    s[k] = [rand([i for i in minimum(b):maximum(b)]) for k in eachindex(lv2Concentrators)]
+    # s::Vector{Int64} = [rand(Int,[i for i in minimum(b):maximum(b)]) for k in eachindex(lv2Concentrators)]
+    s = [rand(minimum(b):maximum(b),nLevel2) for k in eachindex(lv2Concentrators)]
 
     # max number of concentrators at level 1
     C = 7

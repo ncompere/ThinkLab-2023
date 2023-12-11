@@ -73,27 +73,27 @@ end
 function distancesConcentrators(lv1Concentrators::Array{Float32,2}, lv2Concentrators::Array{Float32,2})
     l1::Int64 = size(lv1Concentrators,1)
     l2::Int64 = size(lv2Concentrators,1)
-    distancesConcentrators = zeros(Float32, l1, l2)
+    distancesConcentrators = zeros(Int64, l1, l2)
     for i in 1:l1
         for j in 1:l2
             dist = (lv1Concentrators[i,1]-lv2Concentrators[j,1])^2 + (lv1Concentrators[i,2]-lv2Concentrators[j,2])^2
             dist = dist^0.5
-            distancesConcentrators[i,j] = dist
+            distancesConcentrators[i,j] = trunc(Int, dist)
         end
     end
     return distancesConcentrators
 end
 
-# generate the distance matrix between terminals and concentrators
+# generate the distance matrix between terminals and concentrators of first level
 function distancesTerminalsConcentrators(concentrators::Array{Float32,2}, terminals::Array{Float32,2})
     m = size(concentrators,1)
     n = size(terminals,1)
-    distancesTerminalsConcentrators = zeros(Float32, m, n)
+    distancesTerminalsConcentrators = zeros(Int64, m, n)
     for i in 1:m
         for j in 1:n
             dist = (concentrators[i,1]-terminals[j,1])^2 + (concentrators[i,2]-terminals[j,2])^2
             dist = dist^0.5
-            distancesTerminalsConcentrators[i,j] = dist
+            distancesTerminalsConcentrators[i,j] = trunc(Int, dist)
         end
     end
     return distancesTerminalsConcentrators
