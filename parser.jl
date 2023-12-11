@@ -12,16 +12,16 @@
 =#
 
 
-function loadInstance(fname)
+function loadInstance(fname::String)
     f=open(fname)
     # read of the first line
-    m, n, p, r = parse.(Int, split(readline(f)))
+    m::Int64, n::Int64, p::Int64, r::Int64 = parse.(Int, split(readline(f)))
 
     # we want to divide the set of concentrators in two levels so:
     # we assign 4/5 to level 1 concentrators and 1/5 to level 2 concentrators
     ratio::Float32 = 4/5
-    nLevel1 = (Int)(m*ratio)
-    nLevel2 = m - nLevel1
+    nLevel1::Int64 = (Int)(m*ratio)
+    nLevel2::Int64 = m - nLevel1
 
     # read the location of the level1 concentrators
     lv1Concentrators=zeros(Float32, nLevel1, 2)
@@ -35,7 +35,7 @@ function loadInstance(fname)
 
     # read the location of the level2 concentrators
     lv2Concentrators=zeros(Float32, nLevel2, 2)
-    for i=nLevel1+1:nLevel2
+    for i=1:nLevel2
         values = split(readline(f))
         for j in 1:2
             coordinate = parse(Float32,values[j])
@@ -44,7 +44,7 @@ function loadInstance(fname)
     end
 
     # read the location of the n demands
-    terminals=zeros(Float32, n, 3)
+    terminals=zeros(Float32, n, 2)
     for i=1:n
         values = split(readline(f))
         for j in 1:2
@@ -56,7 +56,7 @@ function loadInstance(fname)
     close(f)
     
     # for our constraints we chose the limited number of concentrators installed at level 1
-    # so, we have a maximum of  =8 concentrators at level 1
+    # so, we have a maximum of 8 concentrators at level 1
     C = 8
 
     return m, n, nLevel1, nLevel2, lv1Concentrators, lv2Concentrators, terminals
@@ -66,13 +66,13 @@ end
 
 
 # ===================================================================================================================================================================#
-#                                                            Creation of the model
+#                                                            Computation of the data
 #====================================================================================================================================================================#
 
 # generate the distance matrix between concentrators
 function distancesConcentrators(lv1Concentrators::Array{Float32,2}, lv2Concentrators::Array{Float32,2})
-    l1 = size(lv1Concentrators,1)
-    l2 = size(lv2Concentrators,1)
+    l1::Int64 = size(lv1Concentrators,1)
+    l2::Int64 = size(lv2Concentrators,1)
     distancesConcentrators = zeros(Float32, l1, l2)
     for i in 1:l1
         for j in 1:l2
@@ -98,3 +98,7 @@ function distancesTerminalsConcentrators(concentrators::Array{Float32,2}, termin
     end
     return distancesTerminalsConcentrators
 end
+
+# testing
+
+loadInstance("data/small1.txt")
