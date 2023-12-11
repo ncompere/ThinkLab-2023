@@ -14,43 +14,33 @@ function vOptRes(filename::String)
     println("(users)    : $n")
     println("(services) : $m")
 
-    # generation of the distance and cost matrixes c b, s
+    # generation of the distance and cost matrixes c, b, s
     c = distancesTerminalsConcentrators(terminals, lv1Concentrators)
     b = distancesConcentrators(lv1Concentrators, lv2Concentrators)
 
-    print(typeof(b))
-
-    b_int = zeros(Int64, nLevel1, nLevel2)
-    for i in b
-        
-
-    print("b_int : ", b_int)
-
     # cost of opening concentrators at level 2
-    # s::Vector{Int64} = [rand(Int,[i for i in minimum(b):maximum(b)]) for k in eachindex(lv2Concentrators)]
-    s = [rand(minimum(b):maximum(b),nLevel2) for k in eachindex(lv2Concentrators)]
+    s = rand(minimum(b):maximum(b),nLevel2)
 
-    # max number of concentrators at level 1
-    C = 7
+    # max number of concentrators at level 1 -> 2/3 of the number of concentrators at level 1
+    C = floor(Int, 2/3 * nLevel1)
 
     TSUFLPmodel = JuMP.Model(() -> MOA.Optimizer(HiGHS.Optimizer))
     set_optimizer_attribute(TSUFLPmodel, MOA.Algorithm(), MOA.EpsilonConstraint())
 
     #set_silent(TSUFLPmodel)
-    #set_attribute(TSUFLPmodel, MOA.Algorithm(), MOA.EpsilonConstraint())
-    set_attribute(TSUFLPmodel, MOA.SolutionLimit(), 4)
+    # set_attribute(TSUFLPmodel, MOA.SolutionLimit(), 4)
 
     @variable(TSUFLPmodel, x[1:n,1:nLevel1], Bin)
     @variable(TSUFLPmodel, y[1:nLevel1,1:nLevel2], Bin)
     @variable(TSUFLPmodel, z[1:nLevel2], Bin)
     @variable(TSUFLPmodel, Z >=0)
 
-    @expression(TSUFLPmodel, z1, sum(c[i,j]*x[i,j] for i in 1:n, j in 1:nLevel1) + sum(b[j,k]*y[j,k] for j in 1:nLevel1, k in 1:nLevel2) + sum(s[k]*z[k] for k in 1:nLevel2))
-    @expression(TSUFLPmodel, z2, Z)
-    #@objective(TSUFLPmodel, Min, [z1,z2])
+    # @expression(TSUFLPmodel, z1, sum(c[i,j]*x[i,j] for i in 1:n, j in 1:nLevel1) + sum(b[j,k]*y[j,k] for j in 1:nLevel1, k in 1:nLevel2) + sum(s[k]*z[k] for k in 1:nLevel2))
+    # objective function to minimizz the maximum distance between terminals and their nearest first level concentrator
+    # @expression(TSUFLPmodel, z2, maximum(minimum(c[i,j]*x[i,j]) for i in 1:n, j in 1:nLevel1))
 
     @objective(TSUFLPmodel, Min, [sum(c[i,j]*x[i,j] for i in 1:n, j in 1:nLevel1) + sum(b[j,k]*y[j,k] for j in 1:nLevel1, k in 1:nLevel2) + sum(s[k]*z[k] for k in 1:nLevel2),Z])
-
+    # @objective(TSUFLPmodel, Min, [z1,z2])
     
     @constraint(TSUFLPmodel, [i = 1:n] ,sum(x[i,j] for j in 1:nLevel1) == 1)
     @constraint(TSUFLPmodel, [i=1:n, j=1:nLevel1] ,x[i,j] <= sum(y[j,k] for k in 1:nLevel2))
@@ -61,16 +51,17 @@ function vOptRes(filename::String)
     @constraint(TSUFLPmodel, [j = 1:nLevel1] ,sum(x[i,j] for i in 1:n) <= C)
 
     # linearization of obj2 (min-max)
-    @constraint(TSUFLPmodel, [i = 1:n, j=1:nLevel1] ,Z >= x[i,j]*c[i,j])
+    @constraint(TSUFLPmodel, [i = 1:n, j=1:nLevel1], Z >= x[i,j]*c[i,j])
 
-    # set_optimizer(TSUFLPmodel, () -> MOA.Optimizer(Gurobi.Optimizer))
-    #set_attribute(TSUFLPmodel, MOA.Algorithm(), MOA.EpsilonConstraint())
+    return TSUFLPmodel
+end
     
+function solve_vOpt(TSUFLPmodel::Model)
     # solve the TSUFLPmodel
     optimize!(TSUFLPmodel)
     solution_summary(TSUFLPmodel)
 
-
+    return objective_value(TSUFLPmodel)
 end
 
-vOptRes("data/small1.txt")
+solve_vOpt(vOptRes("data/small1.txt"))
