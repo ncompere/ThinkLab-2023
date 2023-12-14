@@ -1,10 +1,25 @@
+# Not used yet
+mutable struct instance
+    m::Int64
+    n::Int64
+    nLevel1::Int64
+    nLevel2::Int64
+    lv1Concentrators::Array{Float32,2}
+    lv2Concentrators::Array{Float32,2}
+    terminals::Array{Float32,2}
+    C::Int64
+    c::Array{Int64,2}
+    b::Array{Int64,2}
+    s::Vector{Int64}
+end
+
 mutable struct solution
     selectedLv1::Vector{Int64}
     linksTerminalLevel1::Vector{Int64}
     selectedLv2::Vector{Int64}
     linksLevel1Level2::Vector{Int64}
-    valueObj1::Float64
-    valueObj2::Float64
+    valueObj1::Int64
+    valueObj2::Int64
 end
 
 # function to check if a solution is feasible
@@ -67,5 +82,3 @@ function obj2(sol::solution, d::Array{Int64,2})
     end   
     return maxDistanceTerminalConcentrators
 end
-   
-
