@@ -35,7 +35,7 @@ function isFeasible(sol::solution, C::Int64)
         end
     end
     # check if each concentrator at level 1 is connected to a concentrator at level 2
-    for i in 1:length(sol.linksLevel1Level2)
+    for i in 1:length(sol.selectedLv1)
         if sol.linksLevel1Level2[i] == 0
             return false
         end
