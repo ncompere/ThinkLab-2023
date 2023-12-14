@@ -59,7 +59,7 @@ function loadInstance(fname::String)
     C = floor(Int, 2/3 * nLevel1)
 
     # we generate the cost matrixes
-    c = distancesTerminalsConcentrators(lv1concentrators, terminals)
+    c = distancesTerminalsConcentrators(lv1Concentrators, terminals)
     b = distancesConcentrators(lv1Concentrators, lv2Concentrators)
     s = rand(minimum(b):maximum(b),nLevel2)
 
