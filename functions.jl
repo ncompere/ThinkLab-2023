@@ -43,7 +43,7 @@ function isFeasible(sol::solution, C::Int64)
     return true
 end
 
-
+#=
 # function to calculate the value of the objective function 1
 function obj1(sol::solution, distanceTerminalConcentrators::Array{Int64,2}, distanceConcentrators::Array{Int64,2}, Lv2Costs::Vector{Int64})
     # calculate the costs of the links between the terminals and the selected concentrators at level 1
@@ -82,3 +82,5 @@ function obj2(sol::solution, d::Array{Int64,2})
     end   
     return maxDistanceTerminalConcentrators
 end
+
+=#

@@ -54,12 +54,17 @@ function loadInstance(fname::String)
     end
 
     close(f)
-    
-    # for our constraints we chose the limited number of concentrators installed at level 1
-    # so, we have a maximum of 8 concentrators at level 1
-    C = 8
 
-    return m, n, nLevel1, nLevel2, lv1Concentrators, lv2Concentrators, terminals
+    # max number of concentrators at level 1 -> 2/3 of the number of concentrators at level 1
+    C = floor(Int, 2/3 * nLevel1)
+
+    # we generate the cost matrixes
+    c = distancesTerminalsConcentrators(terminals, lv1Concentrators)
+    b = distancesConcentrators(lv1Concentrators, lv2Concentrators)
+    s = rand(minimum(b):maximum(b),nLevel2)
+
+    data::instance = instance(m, n, nLevel1, nLevel2, lv1Concentrators, lv2Concentrators, terminals, C, c, b, s)
+    return data
 end
 
 
@@ -98,7 +103,3 @@ function distancesTerminalsConcentrators(concentrators::Array{Float32,2}, termin
     end
     return distancesTerminalsConcentrators
 end
-
-# testing
-
-loadInstance("data/small1.txt")
