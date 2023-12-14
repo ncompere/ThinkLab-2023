@@ -1,7 +1,7 @@
 using Random
-using Dates
-include("parser.jl")
+
 include("functions.jl")
+include("parser.jl")
 
 # we will use several occurences of GRASP to generate individuals of our population
 function grasp(data::instance)
@@ -11,8 +11,6 @@ function grasp(data::instance)
 
     # sorting terminals by descending distance from each lv1 concentrator
     sortedTerminalsLevel1 = zeros(Int64, data.n, data.nLevel1)
-    println("sortedTerminalsLevel1: ", size(sortedTerminalsLevel1))
-    println("c: ", size(data.c))
     for i in 1:data.n
         sortedTerminalsLevel1[i,:] = sort(data.c[:,i],rev=true)
     end 
@@ -220,6 +218,8 @@ function grasp(data::instance)
     return solution(selectedLv1Concentrators, linksTerminalLevel1, selectedLv2Concentrators, linksLv1Lv2Concentrators, valueZ1, valueZ2)
 end
 
+#data = loadInstance("data/small1.txt")
+#solGrasp = grasp(data)
 
 #=
 println("Selected level 1 concentrators: ", solGrasp.selectedLv1)

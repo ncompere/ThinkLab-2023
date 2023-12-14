@@ -63,11 +63,8 @@ function loadInstance(fname::String)
     b = distancesConcentrators(lv1Concentrators, lv2Concentrators)
     s = rand(minimum(b):maximum(b),nLevel2)
 
-    data::instance = instance(m, n, nLevel1, nLevel2, lv1Concentrators, lv2Concentrators, terminals, C, c, b, s)
-    return data
+    return instance(m, n, nLevel1, nLevel2, lv1Concentrators, lv2Concentrators, terminals, C, c, b, s)
 end
-
-
 
 
 # ===================================================================================================================================================================#

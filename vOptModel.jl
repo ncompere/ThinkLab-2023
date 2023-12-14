@@ -2,6 +2,7 @@ using JuMP
 using Gurobi
 using HiGHS
 import MultiObjectiveAlgorithms as MOA
+using Plots
 
 include("parser.jl")
 include("functions.jl")
@@ -62,15 +63,24 @@ function solve_vOpt(TSUFLPmodel::Model)
     println(has_values(TSUFLPmodel) ? "has values" : "no values")
     println(result_count(TSUFLPmodel))
 
+    # plot
+    Z1::Vector{Float32} = []
+    Z2::Vector{Float32} = []
     for i in 1:result_count(TSUFLPmodel)
         println("Solution $i")
         println("Objective value: ", objective_value(TSUFLPmodel, result=i))
-        println("x = ", value.(TSUFLPmodel[:x], result=i))
-        println("y = ", value.(TSUFLPmodel[:y], result=i))
-        println("z = ", value.(TSUFLPmodel[:z], result=i))
-        println("Z = ", value.(TSUFLPmodel[:Z], result=i))
+        #println("x = ", value.(TSUFLPmodel[:x], result=i))
+        #println("y = ", value.(TSUFLPmodel[:y], result=i))
+        #println("z = ", value.(TSUFLPmodel[:z], result=i))
+        #println("Z = ", value.(TSUFLPmodel[:Z], result=i))
+        
+        push!(Z1, objective_value(TSUFLPmodel, result=i)[1])
+        push!(Z2, objective_value(TSUFLPmodel, result=i)[2])
     end
+
+    # plot the values of Z1,Z2
+    plot(Z1,Z2,seriestype=:scatter, title="Pareto front", xlabel="Z1", ylabel="Z2")
 end
 
 # testing
-solve_vOpt(vOptRes("data/small1.txt"))
+#solve_vOpt(vOptRes("data/small5.txt"))
