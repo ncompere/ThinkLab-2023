@@ -7,9 +7,8 @@ using Plots
 include("parser.jl")
 include("functions.jl")
 
-function vOptRes(filename::String)
+function vOptRes(data::instance)
 
-    data::instance = loadInstance(filename)
     # transpose c
     data.c = transpose(data.c)
 
@@ -30,15 +29,8 @@ function vOptRes(filename::String)
     @variable(TSUFLPmodel, z[1:data.nLevel2], Bin)
     @variable(TSUFLPmodel, Z >=0)
 
-    # @expression(TSUFLPmodel, z1, sum(c[i,j]*x[i,j] for i in 1:n, j in 1:nLevel1) + sum(b[j,k]*y[j,k] for j in 1:nLevel1, k in 1:nLevel2) + sum(s[k]*z[k] for k in 1:nLevel2))
-    # objective function to minimize the maximum distance between terminals and their nearest first level concentrator
-    # @expression(TSUFLPmodel, z2, maximum(minimum(c[i,j]*x[i,j]) for i in 1:n, j in 1:nLevel1))
-    # @expression(TSUFLPmodel, Z)
 
     @objective(TSUFLPmodel, Min, [sum(data.c[i,j]*x[i,j] for i in 1:data.n, j in 1:data.nLevel1) + sum(data.b[j,k]*y[j,k] for j in 1:data.nLevel1, k in 1:data.nLevel2) + sum(data.s[k]*z[k] for k in 1:data.nLevel2),Z])
-    # @objective(TSUFLPmodel, Min, [z1,Z])
-    # @objective(TSUFLPmodel, Min, sum(c[i,j]*x[i,j] for i in 1:n, j in 1:nLevel1) + sum(b[j,k]*y[j,k] for j in 1:nLevel1, k in 1:nLevel2) + sum(s[k]*z[k] for k in 1:nLevel2))
-
 
     @constraint(TSUFLPmodel, cst1[i=1:data.n] ,sum(x[i,j] for j in 1:data.nLevel1) == 1)
     @constraint(TSUFLPmodel, cst2[i=1:data.n, j=1:data.nLevel1] ,x[i,j] <= sum(y[j,k] for k in 1:data.nLevel2))
@@ -55,8 +47,11 @@ function vOptRes(filename::String)
 end
     
 function solve_vOpt(TSUFLPmodel::Model)
+    getTime = time()
     # solve the TSUFLPmodel
     optimize!(TSUFLPmodel)
+    timevOPt = round(time()- getTime, digits=4)
+    println("Resolution time : $timevOPt s")
     solution_summary(TSUFLPmodel)
 
     # collecting solutions in the decision space
@@ -83,4 +78,5 @@ function solve_vOpt(TSUFLPmodel::Model)
 end
 
 # testing
-#solve_vOpt(vOptRes("data/small5.txt"))
+#data = loadInstance("data/small1.txt")
+#solve_vOpt(vOptRes(data))
