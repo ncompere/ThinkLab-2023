@@ -14,6 +14,8 @@ mutable struct instance
 end
 
 mutable struct solution
+    # TODO : change type of selected to Set{Int64}
+    # TODO : change type of links to Dict{Int64,Int64}
     selectedLv1::Vector{Int64}
     linksTerminalLevel1::Vector{Int64}
     selectedLv2::Vector{Int64}
@@ -43,31 +45,25 @@ function isFeasible(sol::solution, C::Int64)
     return true
 end
 
-#=
+
 # function to calculate the value of the objective function 1
-function obj1(sol::solution, distanceTerminalConcentrators::Array{Int64,2}, distanceConcentrators::Array{Int64,2}, Lv2Costs::Vector{Int64})
+function obj1(sol::solution, data::instance)
+    cost::Int64 = 0
     # calculate the costs of the links between the terminals and the selected concentrators at level 1
-    costLinksTerminalConcentrators = 0
     for i in 1:length(sol.linksTerminalLevel1)
-        costLinksTerminalConcentrators += distanceTerminalConcentrators[i,sol.linksTerminalLevel1[i]]
+        cost += data.c[sol.linksTerminalLevel1[i],i]
     end
-
-    # calculate the costs of the links between the concentrators at level 1 and the concentrators at level 2
-    costLinksLevel1Level2 = 0
-    for i in 1:length(sol.linksLevel1Level2)
-        costLinksLevel1Level2 += distanceTerminalConcentrators[sol.selectedLv1[i],sol.linksLevel1Level2[i]]
+    # calculate the costs of the links between the selected concentrators at level 1 and the selected concentrators at level 2
+    for i in sol.selectedLv1
+        for j in sol.selectedLv2
+            cost += data.b[i,j]
+        end
     end
-
-    # calculate the cost of opening the concentrators at level 2
-    costLevel2 = 0
+    # calculate the costs of opening the selected concentrators at level 2
     for i in sol.selectedLv2
-        costLevel2 += Lv2Costs[i]
+        cost += data.s[i]
     end
-
-    #calculate the total cost
-    totalCost = costLinksTerminalConcentrators + costLinksLevel1Level2 + costLevel2
-
-    return totalCost
+    return cost
 end
 
 
@@ -83,4 +79,3 @@ function obj2(sol::solution, d::Array{Int64,2})
     return maxDistanceTerminalConcentrators
 end
 
-=#
