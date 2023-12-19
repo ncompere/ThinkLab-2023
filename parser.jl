@@ -56,7 +56,7 @@ function loadInstance(fname::String)
     close(f)
 
     # max number of concentrators at level 1 -> 2/3 of the number of concentrators at level 1
-    C = floor(Int, 2/3 * nLevel1)
+    C = floor(Int, 1/3 * nLevel1)
 
     # we generate the cost matrixes
     c = distancesTerminalsConcentrators(lv1Concentrators, terminals)
