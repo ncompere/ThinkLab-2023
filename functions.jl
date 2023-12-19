@@ -47,6 +47,7 @@ end
 
 
 # function to calculate the value of the objective function 1
+# TODO : check if good code
 function obj1(sol::solution, data::instance)
     cost::Int64 = 0
     # calculate the costs of the links between the terminals and the selected concentrators at level 1
@@ -63,19 +64,19 @@ function obj1(sol::solution, data::instance)
     for i in sol.selectedLv2
         cost += data.s[i]
     end
+    println("Cost : ", cost)
     return cost
 end
 
 
 # function to calculate the value of the objective function 2
-function obj2(sol::solution, d::Array{Int64,2})
-    # calculate the maximum distance between the terminals and the selected concentrators at level 1 that we seek to minimize
-    maxDistanceTerminalConcentrators = 0
-    for i in 1:length(sol.linksTerminalLevel1)
-        if d[i,sol.linksTerminalLevel1[i]] > maxDistanceTerminalConcentrators
-            maxDistanceTerminalConcentrators = d[i,sol.linksTerminalLevel1[i]]
-        end
-    end   
-    return maxDistanceTerminalConcentrators
+# TODO : fix code
+function obj2(sol::solution, data::instance)
+    max_distance::Int64 = 0
+    for i in sol.selectedLv1
+        max_distance = max(maximum(data.c[i,:]), max_distance)
+    end
+    println("Max distance : ", max_distance)
+    return max_distance
 end
 
