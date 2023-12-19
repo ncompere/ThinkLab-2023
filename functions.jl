@@ -70,7 +70,7 @@ end
 # function to calculate the value of the objective function 2
 function obj2(sol::solution, c::Array{Int64,2})
     # calculate the maximum distance between the terminals and the selected concentrators at level 1 that we seek to minimize
-    maxDistanceTerminalConcentrators = 0
+    maxDistanceTerminalConcentrators::Int64 = 0
     for i in 1:length(sol.linksTerminalLevel1)
         if c[sol.linksTerminalLevel1[i],i] > maxDistanceTerminalConcentrators
             maxDistanceTerminalConcentrators = c[sol.linksTerminalLevel1[i],i]
@@ -79,3 +79,21 @@ function obj2(sol::solution, c::Array{Int64,2})
     return maxDistanceTerminalConcentrators
 end
 
+#= Function to calculate a vector of the closest lv1 concentrators for each terminal
+Terminals are the indexes, elemnts are the closest concentrators
+Considered concentraters are only from the selected ones
+=#
+function closest_concentrators(sol::solution, data::instance)
+    closest_concentrators::Vector{Int64} = []
+    for i in 1:data.n
+        push!(closest_concentrators, argmax(data.c)[1])
+    end
+    for i in 1:data.n
+        println("Terminal : ", i)
+        for j in sol.selectedLv1
+            println("Comparison : ", data.c[j,i] < data.c[closest_concentrators[i],i])
+            closest_concentrators[i] = data.c[j,i] < data.c[closest_concentrators[i],i] ? j : closest_concentrators[i]
+        end
+    end
+    return closest_concentrators
+end
