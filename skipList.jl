@@ -15,7 +15,7 @@ function SkipList()
     return init
 end
 
-function addArchive(init::point,x::Vector{Float64})
+function addArchive(init::point,x::Vector{Int64})
     temp::point = init
     filtrer = false
     suppre = nothing
@@ -50,7 +50,7 @@ function addArchive(init::point,x::Vector{Float64})
 end
 
 
-function add(head, skiplist::point, x::Vector{Float64})
+function add(head, skiplist::point, x::Vector{Int64})
     inserer = false
     gauche = skiplist # point à gauche du point à insérer
     droite = skiplist.est
