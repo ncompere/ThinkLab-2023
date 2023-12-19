@@ -140,6 +140,7 @@ function grasp(data::instance)
     randLevel2 = rand(1:data.nLevel2)
     append!(selectedLv2Concentrators, randLevel2)
 
+
     for i in 1:data.nLevel2
         append!(remainingLv2Concentrators, i)
     end
@@ -171,28 +172,29 @@ function grasp(data::instance)
         end
         deleteat!(remainingLv2Concentrators, findall(x->x==newLv2Concentrator,remainingLv2Concentrators))
     end
-    # add the costs of the level 2 concentrators to valueZ1
-    for i in eachindex(selectedLv2Concentrators)
+
+    # we add the costs of opening the level 2 concentrators
+    for i in selectedLv2Concentrators
         valueZ1 += data.s[i]
     end
-    
+
     # last step: we determine the set of links between level 1 and level 2 concentrators
     α4 = 0.7
     linksLv1Lv2Concentrators = zeros(Int64, size(selectedLv1Concentrators))
     remainingLevel2Links = copy(selectedLv2Concentrators)
     # we select a random link
     randLevel1 = rand(1:length(selectedLv1Concentrators))
-    randLevel2 = selectedLv2Concentrators[rand(1:length(selectedLv2Concentrators))]
-    linksLv1Lv2Concentrators[randLevel1] = randLevel2
-    valueZ1 += data.b[randLevel1, randLevel2]
+    randLevel2 = rand(1:length(selectedLv2Concentrators))
+    linksLv1Lv2Concentrators[randLevel1] = selectedLv2Concentrators[randLevel2]
+    valueZ1 += data.b[selectedLv1Concentrators[randLevel1], selectedLv2Concentrators[randLevel2]]
     
     for i in 1:length(selectedLv1Concentrators)
         if i != randLevel1
             level1 = i
-            bestLink2 = data.b[level1, remainingLevel2Links[1]]
+            bestLink2 = data.b[selectedLv1Concentrators[level1], remainingLevel2Links[1]]
             worstLink2 = bestLink2
             for j in eachindex(remainingLevel2Links)
-                candidate = data.b[level1, remainingLevel2Links[j]]
+                candidate = data.b[selectedLv1Concentrators[level1], remainingLevel2Links[j]]
                 if candidate < bestLink2
                     bestLink2 = candidate
                 end
@@ -203,17 +205,16 @@ function grasp(data::instance)
             threshold = worstLink2 - α4*(worstLink2 - bestLink2)
             RCL = []
             for j in eachindex(remainingLevel2Links)
-                candidate = data.b[level1, remainingLevel2Links[j]]
+                candidate = data.b[selectedLv1Concentrators[level1], remainingLevel2Links[j]]
                 if candidate <= threshold
                     push!(RCL, j)
                 end
             end
             newArc = RCL[rand(1:size(RCL,1))]
             linksLv1Lv2Concentrators[level1] = remainingLevel2Links[newArc]
-            valueZ1 += data.b[level1, remainingLevel2Links[newArc]] + data.s[remainingLevel2Links[newArc]]
+            valueZ1 += data.b[selectedLv1Concentrators[level1], remainingLevel2Links[newArc]]
         end
     end
-    #allConcentrators = vcat(selectedLv1Concentrators, selectedLv2Concentrators)
 
     return solution(selectedLv1Concentrators, linksTerminalLevel1, selectedLv2Concentrators, linksLv1Lv2Concentrators, valueZ1, valueZ2)
 end
