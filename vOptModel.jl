@@ -37,8 +37,8 @@ function vOptRes(data::instance)
     @constraint(TSUFLPmodel, cst3[j=1:data.nLevel1, k=1:data.nLevel2], y[j,k] <= z[k])
     @constraint(TSUFLPmodel, cst4[j=1:data.nLevel1], sum(y[j,k] for k in 1:data.nLevel2) <= 1)
 
-    # capacity constraint
-    @constraint(TSUFLPmodel, cst5[j = 1:data.nLevel1] ,sum(x[i,j] for i in 1:data.n) <= data.C)
+    # the maximum number of concentrators at level 1 is C
+    @constraint(TSUFLPmodel, cst5, sum(y[j,k] for j in 1:data.nLevel1, k in 1:data.nLevel2) <= data.C)
 
     # linearization of obj2 (min-max)
     @constraint(TSUFLPmodel, cst6[i = 1:data.n, j=1:data.nLevel1], Z >= x[i,j]*data.c[i,j])
@@ -74,7 +74,8 @@ function solve_vOpt(TSUFLPmodel::Model)
     end
 
     # plot the values of Z1,Z2
-    plot(Z1,Z2,seriestype=:scatter, title="Pareto front", xlabel="Z1", ylabel="Z2")
+    #plot!(Z1,Z2,seriestype=:scatter, title="Pareto front", xlabel="Z1", ylabel="Z2")
+    return Z1,Z2
 end
 
 # testing
