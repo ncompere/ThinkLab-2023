@@ -86,14 +86,31 @@ Considered concentraters are only from the selected ones
 function closest_concentrators(sol::solution, data::instance)
     closest_concentrators::Vector{Int64} = []
     for i in 1:data.n
-        push!(closest_concentrators, argmax(data.c)[1])
+        push!(closest_concentrators, argmax(data.c[:,i])[1])
     end
     for i in 1:data.n
-        println("Terminal : ", i)
+        # println("Terminal : ", i)
         for j in sol.selectedLv1
-            println("Comparison : ", data.c[j,i] < data.c[closest_concentrators[i],i])
+            # println("Comparison : ", data.c[j,i] < data.c[closest_concentrators[i],i])
             closest_concentrators[i] = data.c[j,i] < data.c[closest_concentrators[i],i] ? j : closest_concentrators[i]
         end
     end
     return closest_concentrators
+end
+
+function closest_lv2_concentrators(sol::solution, data::instance)
+    closest = Dict{Int64,Int64}()
+    for i in sol.selectedLv1
+        closest[i] = argmax(data.b[i,:])
+    end                                     
+
+    for i in sol.selectedLv1
+        for j in sol.selectedLv2
+            # println("Checking $i, $j : ", data.b[i,j])
+            # println("Stored $i, $closest[i] : ", data.b[i,closest[i]])
+            closest[i] = data.b[i,j] < data.b[i,closest[i]] ? j : closest[i]
+            # println("Closest : ", closest[i])
+        end
+    end
+    return closest
 end

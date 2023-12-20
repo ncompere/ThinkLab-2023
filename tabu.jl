@@ -24,7 +24,7 @@ function tabu(sol::solution, data::instance)
 
     # Tabu search
     while iter <= nbIter
-        println("Iteration : ", iter)
+        # println("Iteration : ", iter)
         moves = choose_candidates(current_solution, data) # List of candidate moves
         if isempty(moves)
             println("No more candidates")
@@ -32,13 +32,13 @@ function tabu(sol::solution, data::instance)
         else
             # choose the best move
             best_move = findmin(moves)
-            println("Best move : ", best_move)
+            # println("Best move : ", best_move)
             # check if the move is in tabu list
-            while best_move[2] ∈ tabu_list && !isempty(moves)
-                println("Move in tabu list")
+            while best_move[2] ∈ tabu_list  && !isempty(moves)
+                # println("Move in tabu list")
                 delete!(moves, best_move[2])
                 best_move = findmin(moves)
-                println("Updated best move : ", best_move)
+                # println("Updated best move : ", best_move)
             end
             # update the current solution
             concentrator_to_delete = findall(x -> x == best_move[2][1], current_solution.selectedLv1)
@@ -46,26 +46,26 @@ function tabu(sol::solution, data::instance)
             push!(current_solution.selectedLv1, best_move[2][2])
             terminals_to_move = findall(x -> x == best_move[2][1], current_solution.linksTerminalLevel1)
             for terminal in terminals_to_move
-                current_solution.linksTerminalLevel1[terminal] = best_move[2][2]
+                current_solution.linksTerminalLevel1[terminal] = closest_concentrators(current_solution,data)[terminal]
             end
             for concentrator in concentrator_to_delete
                 deleteat!(current_solution.linksLevel1Level2, concentrator)
-                push!(current_solution.linksLevel1Level2, rand(1:data.nLevel2))
+                push!(current_solution.linksLevel1Level2, closest_lv2_concentrators(current_solution,data)[best_move[2][2]])
             end
-            current_solution.valueObj1 = obj1(sol, data)
-            println("Current solution value : ", current_solution.valueObj1)
-            current_solution.valueObj2 = obj2(sol, data.c)
+            current_solution.valueObj1 = obj1(current_solution, data)
+            # println("Current solution value : ", current_solution.valueObj1)
+            current_solution.valueObj2 = obj2(current_solution, data.c)
             # update the tabu list
             if length(tabu_list) >= tabu_list_size
                 popfirst!(tabu_list)
             end
             push!(tabu_list, best_move[2])
-            println("Tabu list : ", tabu_list)
+            # println("Tabu list : ", tabu_list)
             # update the best solution
-            println("Best solution value : ", best_solution.valueObj1)
-            println("Current solution value : ", current_solution.valueObj1)
+            # println("Best solution value : ", best_solution.valueObj1)
+            # println("Current solution value : ", current_solution.valueObj1)
             if best_solution.valueObj1 > current_solution.valueObj1
-                println("Better solution found")
+                # println("Better solution found")
                 best_solution = deepcopy(current_solution)
             end
         end
@@ -84,7 +84,6 @@ function choose_candidates(sol::solution, data::instance)
     possible_moves = collect(Iterators.product(sol.selectedLv1, not_selected_lv1_concentrators))
     # println("Possible moves : ", possible_moves)
     # println("Number of possible moves : ", length(possible_moves))
-    # TODO: reasign links to the closest terminal instead of the new one !
     for move ∈ possible_moves
         # println("Move : ", move)
         temp_solution = deepcopy(sol)
@@ -102,7 +101,7 @@ function choose_candidates(sol::solution, data::instance)
         # println("Terminals to move : ", terminals_to_move)
         # println("Terminal links before shift : ", temp_solution.linksTerminalLevel1)
         for terminal in terminals_to_move
-            temp_solution.linksTerminalLevel1[terminal] = move[2]
+            temp_solution.linksTerminalLevel1[terminal] = closest_concentrators(temp_solution,data)[terminal]
         end
         # println("Terminal links after shift : ", temp_solution.linksTerminalLevel1)
         # Updating the links from concentrators to concentrators
@@ -110,14 +109,14 @@ function choose_candidates(sol::solution, data::instance)
             # println("Concentrator links before shift : ", temp_solution.linksLevel1Level2)
             deleteat!(temp_solution.linksLevel1Level2, i)
             # println("Concentrator links after delete : ", temp_solution.linksLevel1Level2)
-            push!(temp_solution.linksLevel1Level2, rand(1:data.nLevel2))
+            push!(temp_solution.linksLevel1Level2, closest_lv2_concentrators(temp_solution,data)[move[2]])
             # println("Concentrator links after add : ", temp_solution.linksLevel1Level2)
         end
         # Check if the solution is feasible
         if isFeasible(temp_solution, data.C)
             # println("Feasible solution")
             # Check if the solution is better than the current solution
-            if sol.valueObj1 > obj1(temp_solution, data)
+            # if sol.valueObj1 > obj1(temp_solution, data)
                 # println("Better solution found regarding z1 ")
                 # push!(candidate_list, move)
                 candidate_list[move] = obj1(temp_solution, data)
@@ -125,27 +124,21 @@ function choose_candidates(sol::solution, data::instance)
             #     # println("Better solution found regarding z2 ")
             #     push!(candidate_list, move)
             #     candidate_list[move] = obj2(temp_solution, data.c)
-            end
+            # end
         end
     end
     return candidate_list
 end
 
-# TODO : create a function that calculates the nearest concentrator for each terminal and each lv2 concentrator
-
 # testing
-data = loadInstance("data/small1.txt")
-println(typeof(data))
-sol::solution = grasp(data)
-println("GRASP done")
+# data = loadInstance("data/small1.txt")
+# # println(typeof(data))
+# sol = @time grasp(data)
+# println("GRASP done")
+# println("GRASP solution : ", sol)
 
-println("Selected concentrators : ", sol.selectedLv1)
-println("Links terminal level 1 : ", sol.linksTerminalLevel1)
-
-closest = closest_concentrators(sol, data)
-println("Closest concentrators : ", closest)
-
-# cand = @time choose_candidates(sol, data)
-# println("Candidate list : ", cand)
-# println("Number of candidates : ", length(cand))
-# @time tabu(sol, data)
+# # # cand = @time choose_candidates(sol, data)
+# # # println("Candidate list : ", cand)
+# # # println("Number of candidates : ", length(cand))
+# sol = @time tabu(sol, data)
+# println("Tabu solution : ", sol)
