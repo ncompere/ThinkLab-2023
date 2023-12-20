@@ -1,4 +1,4 @@
-# skipList made to store the pareto front of a min-max problem
+# skipList made to store the pareto front of a min-max problem, so we call it using Z1, -Z2 for a min-min problem
 
 mutable struct point
     valeur::Vector{Float64}
@@ -79,7 +79,6 @@ function add(head, skiplist::point, x::Vector{Int64})
         droite.ouest = temp
         newPoint = temp
     end
-    #println("Il a ",cpt,"ligne de ",x)
 end
 
 
@@ -112,7 +111,7 @@ function droiteSup(droite::point)
     return temp
 end
 
-# Retourne si x1 domine x2
+
 function domine(x1,x2)
     if x1[1] <= x2[1] && x1[2] >= x2[2]
         return true
@@ -147,8 +146,6 @@ function pileOuFace()
 end
 
 
-
-
 function affichageSkiplist(head::point)
     nbrpoint = nbrPoint(head)
     affichage = string(head.valeur)
@@ -165,7 +162,6 @@ function affichageSkiplist(head::point)
         affichage = string(temp.valeur)
         tempEst = temp
         while tempEst.est != nothing
-            #println("TEST")
             tempEst = tempEst.est
             affichage = affichage * "------"
             affichage = affichage * string(tempEst.valeur)
