@@ -17,11 +17,11 @@ function main()
 
     # generattion d'une population initiale de solutions avec GRASP
     nbIterationsGRASP = 200
+    α = 0.7
     solutionsInitiales::Vector{solution} = []
     solutionsTabu::Vector{solution} = []
     archiveGRASP = SkipList()
     archiveTabu = SkipList()
-    #archive = SkipList()
 
     # initialisation des vecteurs pour le plot des solutions
     # plot grasp
@@ -32,10 +32,11 @@ function main()
     T2::Vector{Int64} = []
     getTime = time()
     for i in 1:nbIterationsGRASP
-        solGrasp = grasp(data)
+        solGrasp = grasp(data, α)
         push!(solutionsInitiales, solGrasp)
         push!(Z1, solGrasp.valueObj1)
         push!(Z2, solGrasp.valueObj2)
+
         solTabu = tabu(solGrasp, data)
         push!(solutionsTabu, solTabu)
         push!(T1, solTabu.valueObj1)
@@ -45,23 +46,13 @@ function main()
     end
     timeGRASP = round(time()- getTime, digits=4)
     println("Temps de résolution : $timeGRASP s")
-    #affichageSkiplist(archive)
-    #println("Nombre de points non dominés : ", nbrPoint(archive))
-    #points = setOfSolutions(archive)
 
     pointsGRASP = setOfSolutions(archiveGRASP)
     pointsTabu = setOfSolutions(archiveTabu)
 
     # solve avec MOA
     Y1, Y2 = solve_vOpt(vOptRes(data))
-#=
-    for i in eachindex(points)
-        # add to Z1 the first index of each point in the set of solutions
-        push!(Z1, points[i][1])
-        # add to Z2 the second index of each point in the set of solutions
-        push!(Z2, -(points[i][2]))
-    end
-=#
+    # plot solution space
     plot(Y1,Y2,seriestype=:scatter, title="Objective space", xlabel="Z1", ylabel="Z2", label="vOpt", size=(800,600))
     plot!(Z1,Z2,seriestype=:scatter, label="GRASP")
     display(plot!(T1,T2,seriestype=:scatter, label="Tabu"))

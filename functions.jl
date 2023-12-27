@@ -50,7 +50,7 @@ end
 function obj1(sol::solution, data::instance)
     cost::Int64 = 0
     # calculate the costs of the links between the terminals and the selected concentrators at level 1
-    for i in 1:length(sol.linksTerminalLevel1)
+    for i in eachindex(sol.linksTerminalLevel1)
         cost += data.c[sol.linksTerminalLevel1[i],i]
     end
 
