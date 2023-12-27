@@ -114,3 +114,45 @@ function closest_lv2_concentrators(sol::solution, data::instance)
     end
     return closest
 end
+
+# function to create a refset for the first objective
+function createRefSetZ1(solutions::Vector{solution}, lengthRefSet::Int64)
+    # initialization of the reference sets
+    refSet::Vector{solution} = []
+    for i in 1:lengthRefSet
+        bestZ = typemax(Int64)
+        indexBestZ = -1
+        for j in eachindex(solutions)
+            candidate = solutions[j].valueObj1
+            if candidate < bestZ
+                bestZ = solutions[j].valueObj1
+                bestSolZ1 = candidate
+                indexBestZ = j
+            end
+        end
+        push!(refSet, solutions[indexBestZ])
+        deleteat!(solutions, indexBestZ)
+    end
+    return refSet
+end
+
+# function to create a refset for the second objective
+function createRefSetZ2(solutions::Vector{solution}, lengthRefSet::Int64)
+    # initialization of the reference sets
+    refSet::Vector{solution} = []
+    for i in 1:lengthRefSet
+        bestZ = typemax(Int64)
+        indexBestZ = -1
+        for j in eachindex(solutions)
+            candidate = solutions[j].valueObj2
+            if candidate < bestZ
+                bestZ = solutions[j].valueObj2
+                bestSolZ1 = candidate
+                indexBestZ = j
+            end
+        end
+        push!(refSet, solutions[indexBestZ])
+        deleteat!(solutions, indexBestZ)
+    end
+    return refSet
+end

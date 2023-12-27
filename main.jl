@@ -6,8 +6,6 @@ include("functions.jl")
 include("skipList.jl")
 include("tabu.jl")
 
-# using Plots
-
 function main()
     # chargement de l'instance
     println("Veuillez introduire de nom de l'instance dans le dossier data (ex: small1) :")
@@ -36,7 +34,6 @@ function main()
         push!(solutionsInitiales, solGrasp)
         push!(Z1, solGrasp.valueObj1)
         push!(Z2, solGrasp.valueObj2)
-
         solTabu = tabu(solGrasp, data)
         push!(solutionsTabu, solTabu)
         push!(T1, solTabu.valueObj1)
@@ -49,7 +46,6 @@ function main()
 
     pointsGRASP = setOfSolutions(archiveGRASP)
     pointsTabu = setOfSolutions(archiveTabu)
-
     # solve avec MOA
     Y1, Y2 = solve_vOpt(vOptRes(data))
     # plot solution space
@@ -87,44 +83,23 @@ function main()
     plot!(arc_Z1,arc_Z2,seriestype=:scatter, label="GRASP")
     display(plot!(arc_T1,arc_T2,seriestype=:scatter, label="Tabu"))
     savefig("plot/Y_N.png")
-#=
 
-    # initialization of the reference sets
-    refSet1::Vector{solution} = []
-    refSet2::Vector{solution} = []
+
+
+    # we add the best 10 solutions for each objective in two refSets
     lengthRefSet = 10
+    refSet1::Vector{solution} = createRefSetZ1(solutionsTabu, lengthRefSet) 
+    refSet2::Vector{solution} = createRefSetZ2(solutionsTabu, lengthRefSet)
+    println("RefSet 1 : ", refSet1)
+    println("RefSet 2 : ", refSet2)
 
-    # we add the best 5 solutions of each objective to each refset
-    for i in 1:lengthRefSet
-        bestZ1 = typemax(Int64)
-        indexBestZ1 = -1
-        for j in eachindex(solutionsInitiales)
-            candidate = solutionsInitiales[j].valueObj1
-            if candidate < bestZ1
-                bestZ1 = solutionsInitiales[j].valueObj1
-                bestSolZ1 = candidate
-                indexBestZ1 = j
-            end
-        end
-        push!(refSet1, solutionsInitiales[indexBestZ1])
-        deleteat!(solutionsInitiales, indexBestZ1)
-    end
+    # we avoid the solutions that were already in the same pair
+    pairesInterdites::Vector{solution} = []
 
-    for i in 1:lengthRefSet
-        bestZ2 = typemax(Int64)
-        indexBestZ2 = -1
-        for j in eachindex(solutionsInitiales)
-            candidate = solutionsInitiales[j].valueObj2
-            if candidate < bestZ2
-                bestZ2 = candidate
-                bestSolZ2 = solutionsInitiales[j]
-                indexBestZ2 = j
-            end
-        end
-        push!(refSet2, solutionsInitiales[indexBestZ2])
-        deleteat!(solutionsInitiales, indexBestZ2)
-    end
-    =#
+    # we stop when a new solution is added to the refSet
+    stopCriterion::Bool = false
+
+
 end
 
 main()
