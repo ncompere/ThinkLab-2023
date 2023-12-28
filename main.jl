@@ -87,18 +87,21 @@ function main()
 
 
     # we add the best 10 solutions for each objective in two refSets
+    #### Nico ici if faudra prendre les solutions du tabou 1 (Z1) pour le refSet1 et du tabou 2 (Z2) pour le refSet2
     lengthRefSet = 10
     refSet1::Vector{solution} = createRefSetZ1(solutionsTabu, lengthRefSet) 
     refSet2::Vector{solution} = createRefSetZ2(solutionsTabu, lengthRefSet)
+    
     println("RefSet 1 : ", refSet1)
     println("RefSet 2 : ", refSet2)
+
+
 
     # we avoid the solutions that were already in the same pair
     pairesInterdites::Vector{solution} = []
 
     # we stop when a new solution is added to the refSet
     stopCriterion::Bool = false
-
 
 end
 

@@ -133,6 +133,22 @@ function createRefSetZ1(solutions::Vector{solution}, lengthRefSet::Int64)
         push!(refSet, solutions[indexBestZ])
         deleteat!(solutions, indexBestZ)
     end
+    # the most distant solutions to the refSet1 are added to build the second half
+    for i in Int(lengthRefSet/2)+1:lengthRefSet
+        maxDist = 0
+        indexMaxDist = -1
+        for j in 1:length(solutions)
+            for k in eachindex(refSet)
+                distCandidate = distanceSolutions(solutions[j], refSet[k])
+                if distCandidate > maxDist
+                    maxDist = distCandidate
+                    indexMaxDist = j
+                end
+            end
+        end
+        push!(refSet, solutions[indexMaxDist])
+        deleteat!(solutions, indexMaxDist)
+    end
     return refSet
 end
 
@@ -140,7 +156,7 @@ end
 function createRefSetZ2(solutions::Vector{solution}, lengthRefSet::Int64)
     # initialization of the reference sets
     refSet::Vector{solution} = []
-    for i in 1:lengthRefSet
+    for i in 1:Int(lengthRefSet/2)
         bestZ = typemax(Int64)
         indexBestZ = -1
         for j in eachindex(solutions)
@@ -154,5 +170,28 @@ function createRefSetZ2(solutions::Vector{solution}, lengthRefSet::Int64)
         push!(refSet, solutions[indexBestZ])
         deleteat!(solutions, indexBestZ)
     end
+    # the most distant solutions to the refSet1 are added to build the second half
+    for i in Int(lengthRefSet/2)+1:lengthRefSet
+        maxDist = 0
+        indexMaxDist = -1
+        for j in 1:length(solutions)
+            for k in eachindex(refSet)
+                distCandidate = distanceSolutions(solutions[j], refSet[k])
+                if distCandidate > maxDist
+                    maxDist = distCandidate
+                    indexMaxDist = j
+                end
+            end
+        end
+        push!(refSet, solutions[indexMaxDist])
+        deleteat!(solutions, indexMaxDist)
+    end
+
     return refSet
+end
+
+# function to calculate the distance between two points
+function distanceSolutions(S1::solution,S2::solution)::Int64
+    return length(setdiff(S1.selectedLv1,S2.selectedLv1)) + length(setdiff(S2.selectedLv1,S1.selectedLv1)) +
+           length(setdiff(S1.selectedLv2,S2.selectedLv2)) + length(setdiff(S2.selectedLv2,S1.selectedLv2))
 end
