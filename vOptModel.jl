@@ -21,6 +21,8 @@ function vOptRes(data::instance)
 
     # set_attribute(TSUFLPmodel, MOA.SolutionLimit(), 4)
 
+    set_time_limit_sec(TSUFLPmodel, 300.0)
+
     set_silent(TSUFLPmodel)
 
     # decision variables
