@@ -14,8 +14,6 @@ mutable struct instance
 end
 
 mutable struct solution
-    # TODO : change type of selected to Set{Int64}
-    # TODO : change type of links to Dict{Int64,Int64}
     selectedLv1::Vector{Int64}
     linksTerminalLevel1::Vector{Int64}
     selectedLv2::Vector{Int64}
@@ -65,28 +63,6 @@ function obj1(sol::solution, data::instance)
     end
     return cost
 end
-
-# function obj1_bis(sol::solution, data::instance)
-#     cost::Int64 = 0
-#     data.c = transpose(data.c)
-#     println("size of c : ", size(data.c))
-#     # calculate the costs of the links between the terminals and the selected concentrators at level 1
-#     for i in eachindex(sol.linksTerminalLevel1)
-#         cost += data.c[sol.linksTerminalLevel1[i], i]
-#     end
-
-#     # calculate the costs of opening the selected concentrators at level 2
-#     for i in sol.selectedLv2
-#         cost += data.s[i]
-#     end
-
-#     # calculate the costs of the links between the selected concentrators at level 1 and the selected concentrators at level 2
-#     for i in eachindex(sol.selectedLv1)
-#         cost += data.b[sol.selectedLv1[i], sol.linksLevel1Level2[i]]
-#     end
-#     return cost
-# end
-
 
 # function to calculate the value of the objective function 2
 function obj2(sol::solution, c::Array{Int64,2})
