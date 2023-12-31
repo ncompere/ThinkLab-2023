@@ -1,0 +1,17 @@
+Solution recap 
+
+vOpt 
+Mean obj1 : NaN 
+Mean obj2 : NaN 
+
+GRASP 
+Mean obj1 : 11740.305 
+Mean obj2 : 57.255 
+
+Tabu 
+Mean obj1 : 11624.355 
+Mean obj2 : 50.14 
+
+Path relinking 
+Mean obj1 : 10625.7055393586 
+Mean obj2 : 55.66180758017493 

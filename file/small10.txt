@@ -1,0 +1,33 @@
+Solution recap 
+
+vOpt 
+Mean obj1 : 1139.2 
+Mean obj2 : 40.4 
+Min obj1 : 1081.0 
+Min obj2 : 34.0 
+Max obj1 : 1238.0 
+Max obj2 : 46.0 
+
+GRASP 
+Mean obj1 : 1774.8 
+Mean obj2 : 59.475 
+Min obj1 : 1466 
+Min obj2 : 46 
+Max obj1 : 2166 
+Max obj2 : 101 
+
+Tabu 
+Mean obj1 : 1438.19 
+Mean obj2 : 48.14 
+Min obj1 : 1211 
+Min obj2 : 36 
+Max obj1 : 1834 
+Max obj2 : 64 
+
+Path relinking 
+Mean obj1 : 1271.6052631578948 
+Mean obj2 : 53.44736842105263 
+Min obj1 : 1174 
+Min obj2 : 46 
+Max obj1 : 1377 
+Max obj2 : 64 
